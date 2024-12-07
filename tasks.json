@@ -1,0 +1,17 @@
+[
+    {
+        "task": "Task 2",
+        "priority": "Низкий",
+        "deadline": "2024-11-30"
+    },
+    {
+        "task": "Task 3",
+        "priority": "Средний",
+        "deadline": "2024-10-31"
+    },
+    {
+        "task": "Task 1",
+        "priority": "Высокий",
+        "deadline": "2024-12-31"
+    }
+]
