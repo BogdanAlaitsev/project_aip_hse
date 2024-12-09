@@ -1,3 +1,28 @@
+"""
+Task Manager Application
+=========================
+This application is a simple task manager built using PyQt6. 
+It allows users to add, delete, sort, save, and load tasks.
+
+Features:
+---------
+- Add tasks with priority and deadline.
+- Delete selected tasks.
+- Sort tasks by priority or deadline.
+- Save tasks to a JSON file.
+- Load tasks from a JSON file.
+
+Usage:
+------
+Run this script to launch the application. 
+The GUI will allow interaction with the task management features.
+
+Author:
+-------
+Bogdan Alaitsev
+
+"""
+
 import sys
 import json
 from PyQt6.QtWidgets import (
@@ -6,8 +31,43 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QDate
 
+
 class TaskManager(QWidget):
+    """
+    TaskManager class provides a graphical interface for task management.
+
+    Methods:
+    --------
+    __init__():
+        Initializes the main window and components.
+
+    init_ui():
+        Sets up the layout and components of the application.
+
+    add_task():
+        Adds a new task to the list.
+
+    delete_task():
+        Deletes the selected task from the list.
+
+    sort_by_priority():
+        Sorts tasks in the list by priority.
+
+    sort_by_deadline():
+        Sorts tasks in the list by deadline.
+
+    save_tasks():
+        Saves the current tasks to a JSON file.
+
+    load_tasks():
+        Loads tasks from a JSON file into the list.
+    """
+
     def __init__(self):
+        """
+        Initialize the Task Manager application.
+        Sets up the main layout and loads existing tasks from file.
+        """
         super().__init__()
         self.setWindowTitle("Task Manager")
         self.setGeometry(100, 100, 400, 500)
@@ -23,22 +83,21 @@ class TaskManager(QWidget):
         self.load_tasks()  # Загрузка задач при инициализации
 
     def init_ui(self):
-        # Поле ввода задачи
+        """
+        Initializes the user interface components and layout.
+        """
         self.task_input.setPlaceholderText("Введите задачу")
         self.layout.addWidget(self.task_input)
 
-        # Приоритет
         self.priority_input.addItems(["Низкий", "Средний", "Высокий"])
         self.layout.addWidget(QLabel("Приоритет"))
         self.layout.addWidget(self.priority_input)
 
-        # Дедлайн
         self.deadline_input.setCalendarPopup(True)
         self.deadline_input.setDate(QDate.currentDate())
         self.layout.addWidget(QLabel("Дедлайн"))
         self.layout.addWidget(self.deadline_input)
 
-        # Кнопки
         button_layout = QHBoxLayout()
         add_button = QPushButton("Добавить задачу")
         add_button.clicked.connect(self.add_task)
@@ -65,55 +124,86 @@ class TaskManager(QWidget):
         button_layout.addWidget(load_button)
 
         self.layout.addLayout(button_layout)
-
-        # Список задач
         self.layout.addWidget(self.task_list)
-
-        # Установка основного макета
         self.setLayout(self.layout)
 
     def add_task(self):
+        """
+        Adds a new task to the task list based on user input.
+        Saves tasks to the JSON file after addition.
+        """
         task_name = self.task_input.text().strip()
         priority = self.priority_input.currentText()
         deadline = self.deadline_input.date().toString("yyyy-MM-dd")
 
         if task_name:
-            task_info = {"task": task_name, "priority": priority, "deadline": deadline}
-            self.task_list.addItem(f"{task_name} | Приоритет: {priority} | Дедлайн: {deadline}")
+            task_info = {
+                "task": task_name,
+                "priority": priority,
+                "deadline": deadline
+            }
+            self.task_list.addItem(
+                f"{task_name} | Приоритет: {priority} | Дедлайн: {deadline}"
+            )
             self.task_input.clear()
-            self.save_tasks()  # Сохраняем задачи после добавления
+            self.save_tasks()
         else:
             QMessageBox.warning(self, "Ошибка", "Задача не может быть пустой.")
 
     def delete_task(self):
+        """
+        Deletes the selected task from the task list.
+        Saves tasks to the JSON file after deletion.
+        """
         selected_task = self.task_list.currentRow()
         if selected_task >= 0:
             self.task_list.takeItem(selected_task)
-            self.save_tasks()  # Сохраняем задачи после удаления
+            self.save_tasks()
         else:
             QMessageBox.warning(self, "Ошибка", "Выберите задачу для удаления.")
 
     def sort_by_priority(self):
+        """
+        Sorts tasks in the list by priority in ascending order.
+        Saves tasks to the JSON file after sorting.
+        """
         try:
-            tasks = [self.task_list.item(i).text() for i in range(self.task_list.count())]
-            tasks.sort(key=lambda x: ["Низкий", "Средний", "Высокий"].index(x.split('|')[1].split(': ')[1].strip()))
+            tasks = [
+                self.task_list.item(i).text()
+                for i in range(self.task_list.count())
+            ]
+            tasks.sort(
+                key=lambda x: ["Низкий", "Средний", "Высокий"].index(
+                    x.split('|')[1].split(': ')[1].strip()
+                )
+            )
             self.task_list.clear()
             self.task_list.addItems(tasks)
-            self.save_tasks()  # Сохраняем задачи после сортировки
+            self.save_tasks()
         except Exception as e:
-            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка при сортировке: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка: {str(e)}")
 
     def sort_by_deadline(self):
+        """
+        Sorts tasks in the list by deadline in ascending order.
+        Saves tasks to the JSON file after sorting.
+        """
         try:
-            tasks = [self.task_list.item(i).text() for i in range(self.task_list.count())]
+            tasks = [
+                self.task_list.item(i).text()
+                for i in range(self.task_list.count())
+            ]
             tasks.sort(key=lambda x: x.split('|')[-1].split(': ')[1].strip())
             self.task_list.clear()
             self.task_list.addItems(tasks)
-            self.save_tasks()  # Сохраняем задачи после сортировки
+            self.save_tasks()
         except Exception as e:
-            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка при сортировке: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка: {str(e)}")
 
     def save_tasks(self):
+        """
+        Saves the current tasks to a JSON file (`tasks.json`) in the local directory.
+        """
         tasks = []
         for i in range(self.task_list.count()):
             task_text = self.task_list.item(i).text()
@@ -129,24 +219,32 @@ class TaskManager(QWidget):
             json.dump(tasks, f, ensure_ascii=False, indent=4)
 
     def load_tasks(self):
+        """
+        Loads tasks from a JSON file (`tasks.json`) into the task list.
+        Displays an error message if the file is not found or invalid.
+        """
         try:
             with open('tasks.json', 'r', encoding='utf-8') as f:
                 tasks = json.load(f)
                 self.task_list.clear()
                 for task in tasks:
-                    task_info = f"{task['task']} | Приоритет: {task['priority']} | Дедлайн: {task['deadline']}"
+                    task_info = (
+                        f"{task['task']} | Приоритет: {task['priority']} | "
+                        f"Дедлайн: {task['deadline']}"
+                    )
                     self.task_list.addItem(task_info)
 
-                QMessageBox.information(self, "Загрузка задач", "Задачи успешно загружены.")
-                return tasks
-
+                QMessageBox.information(self, "Загрузка задач", "Задачи загружены.")
         except FileNotFoundError:
             QMessageBox.warning(self, "Ошибка", "Файл с задачами не найден.")
         except Exception as e:
-            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка при загрузке задач: {str(e)}")
+            QMessageBox.warning(self, "Ошибка", f"Произошла ошибка: {str(e)}")
 
 
 def main():
+    """
+    Main function to launch the application.
+    """
     app = QApplication(sys.argv)
     window = TaskManager()
     window.show()
