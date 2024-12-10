@@ -3,7 +3,7 @@ import json
 import os
 from PyQt6.QtCore import QDate
 from PyQt6.QtWidgets import QApplication
-from Task_Manager import TaskManager
+from TaskManager import TaskManager
 
 
 class TestTaskManager(unittest.TestCase):
