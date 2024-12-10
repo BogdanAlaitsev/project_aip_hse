@@ -1,7 +1,7 @@
 """
 Task Manager Application
 =========================
-This application is a simple task manager built using PyQt6. 
+This application is a simple task manager built using PyQt6.
 It allows users to add, delete, sort, save, and load tasks.
 
 Features:
@@ -14,7 +14,7 @@ Features:
 
 Usage:
 ------
-Run this script to launch the application. 
+Run this script to launch the application.
 The GUI will allow interaction with the task management features.
 
 Author:
@@ -26,8 +26,17 @@ Bogdan Alaitsev
 import sys
 import json
 from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QLineEdit, QComboBox, QDateEdit, QListWidget, QMessageBox
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QLineEdit,
+    QComboBox,
+    QDateEdit,
+    QListWidget,
+    QMessageBox,
 )
 from PyQt6.QtCore import Qt, QDate
 
@@ -137,11 +146,7 @@ class TaskManager(QWidget):
         deadline = self.deadline_input.date().toString("yyyy-MM-dd")
 
         if task_name:
-            task_info = {
-                "task": task_name,
-                "priority": priority,
-                "deadline": deadline
-            }
+            task_info = {"task": task_name, "priority": priority, "deadline": deadline}
             self.task_list.addItem(
                 f"{task_name} | Приоритет: {priority} | Дедлайн: {deadline}"
             )
@@ -169,12 +174,11 @@ class TaskManager(QWidget):
         """
         try:
             tasks = [
-                self.task_list.item(i).text()
-                for i in range(self.task_list.count())
+                self.task_list.item(i).text() for i in range(self.task_list.count())
             ]
             tasks.sort(
                 key=lambda x: ["Низкий", "Средний", "Высокий"].index(
-                    x.split('|')[1].split(': ')[1].strip()
+                    x.split("|")[1].split(": ")[1].strip()
                 )
             )
             self.task_list.clear()
@@ -190,10 +194,9 @@ class TaskManager(QWidget):
         """
         try:
             tasks = [
-                self.task_list.item(i).text()
-                for i in range(self.task_list.count())
+                self.task_list.item(i).text() for i in range(self.task_list.count())
             ]
-            tasks.sort(key=lambda x: x.split('|')[-1].split(': ')[1].strip())
+            tasks.sort(key=lambda x: x.split("|")[-1].split(": ")[1].strip())
             self.task_list.clear()
             self.task_list.addItems(tasks)
             self.save_tasks()
@@ -211,11 +214,11 @@ class TaskManager(QWidget):
             task_info = {
                 "task": task_parts[0],
                 "priority": task_parts[1].split(": ")[1],
-                "deadline": task_parts[2].split(": ")[1]
+                "deadline": task_parts[2].split(": ")[1],
             }
             tasks.append(task_info)
 
-        with open('tasks.json', 'w', encoding='utf-8') as f:
+        with open("tasks.json", "w", encoding="utf-8") as f:
             json.dump(tasks, f, ensure_ascii=False, indent=4)
 
     def load_tasks(self):
@@ -224,7 +227,7 @@ class TaskManager(QWidget):
         Displays an error message if the file is not found or invalid.
         """
         try:
-            with open('tasks.json', 'r', encoding='utf-8') as f:
+            with open("tasks.json", "r", encoding="utf-8") as f:
                 tasks = json.load(f)
                 self.task_list.clear()
                 for task in tasks:
